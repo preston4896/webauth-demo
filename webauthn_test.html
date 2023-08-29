@@ -40,9 +40,7 @@
             try {
                 const credential = await navigator.credentials.create({ publicKey });
                 console.log('Credential created:', credential);
-                const clientDataJSONString = clientDataBuffer.toString('utf8');
                 console.log('client data hex: ', credential.response.clientDataJSON);
-                console.log('clientDataString: ', clientDataJSONString);
                 const attestationObject = credential.response.attestationObject;
                 console.log('attestationObject: ', attestationObject);
                 const decodedAttestationObject = CBOR.decode(attestationObject);
