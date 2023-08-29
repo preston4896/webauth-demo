@@ -40,7 +40,6 @@
             try {
                 const credential = await navigator.credentials.create({ publicKey });
                 console.log('Credential created:', credential);
-                const clientDataBuffer = Buffer.from(credential.response.clientDataJSON, 'hex');
                 const clientDataJSONString = clientDataBuffer.toString('utf8');
                 console.log('client data hex: ', credential.response.clientDataJSON);
                 console.log('clientDataString: ', clientDataJSONString);
