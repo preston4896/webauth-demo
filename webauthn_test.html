@@ -27,7 +27,12 @@
                         type: "public-key",
                         alg: -7  // "ES256" IANA COSE Algorithms registry
                     }
-                ]
+                ],
+                attestation: "direct",
+                authenticatorSelection: {
+                    userVerification: "preferred",
+                    residentKey: "discouraged",
+                }
             };
 
             try {
