@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebAuthn Test</title>
+</head>
+<body>
+    <h1>WebAuthn Test Page</h1>
+    <button onclick="createCredential()">Create Credential</button>
+    <button onclick="getSignature()">Get Signature</button>
+
+    <script>
+        async function createCredential() {
+            const publicKey = {
+                challenge: new Uint8Array([1]),
+                rp: {
+                    name: "Your WebAuthn Demo"
+                },
+                user: {
+                    id: new Uint8Array([1]),
+                    name: "username",
+                    displayName: "User Name"
+                },
+                pubKeyCredParams: [
+                    {
+                        type: "public-key",
+                        alg: -7  // "ES256" IANA COSE Algorithms registry
+                    }
+                ]
+            };
+
+            try {
+                const credential = await navigator.credentials.create({ publicKey });
+                console.log('Credential created:', credential);
+            } catch (err) {
+                console.error('Error creating credential:', err);
+            }
+        }
+
+        async function getSignature() {
+            const publicKey = {
+                challenge: new Uint8Array([/* some random bytes */]),
+                allowCredentials: [{
+                    type: "public-key",
+                    id: new Uint8Array([/* the credential ID received during creation */])
+                }]
+            };
+
+            try {
+                const assertion = await navigator.credentials.get({ publicKey });
+                console.log('Signature received:', assertion);
+            } catch (err) {
+                console.error('Error getting signature:', err);
+            }
+        }
+    </script>
+</body>
+</html>
+
