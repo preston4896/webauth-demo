@@ -10,11 +10,9 @@
     <button onclick="createCredential()">Create Credential</button>
     <button onclick="getSignature()">Get Signature</button>
 
-    <script src="https://cdn.jsdelivr.net/npm/cbor@9.0.1/lib/cbor.min.js"></script>
-
+    <script src="https://raw.githubusercontent.com/paroga/cbor-js/master/cbor.js"></script>
+    
     <script>
-        const CBOR = require('CBOR');
-
         async function createCredential() {
             const publicKey = {
                 challenge: new Uint8Array([1]),
