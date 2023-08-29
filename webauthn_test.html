@@ -10,7 +10,11 @@
     <button onclick="createCredential()">Create Credential</button>
     <button onclick="getSignature()">Get Signature</button>
 
+    <script src="https://cdn.jsdelivr.net/npm/cbor@9.0.1/lib/cbor.min.js"></script>
+
     <script>
+        const CBOR = require('CBOR');
+
         async function createCredential() {
             const publicKey = {
                 challenge: new Uint8Array([1]),
@@ -38,6 +42,15 @@
             try {
                 const credential = await navigator.credentials.create({ publicKey });
                 console.log('Credential created:', credential);
+                const clientDataBuffer = Buffer.from(credential.response.clientDataJSON, 'hex');
+                const clientDataJSONString = clientDataBuffer.toString('utf8');
+                console.log('client data hex: ', credential.response.clientDataJSON);
+                console.log('clientDataString: ', clientDataJSONString);
+                const attestationObject = credential.response.attestationObject;
+                console.log('attestationObject: ', attestationObject);
+                const decodedAttestationObject = CBOR.decode(attestationObject);
+                const authDataHex = "0x" + decodedAttestationObject.authData.toString("hex");
+                console.log('authDataHex: ', authDataHex);
             } catch (err) {
                 console.error('Error creating credential:', err);
             }
@@ -59,6 +72,8 @@
                 console.error('Error getting signature:', err);
             }
         }
+
+        
     </script>
 </body>
 </html>
