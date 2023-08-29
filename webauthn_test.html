@@ -18,6 +18,16 @@
                 .join('');
         }
 
+        function derToBytes(signature) {
+            var usignature = new Uint8Array(signature);
+            var rStart = usignature[4] === 0 ? 5 : 4;
+            var rEnd = rStart + 32;
+            var sStart = usignature[rEnd + 2] === 0 ? rEnd + 3 : rEnd + 2;
+            var r = usignature.slice(rStart, rEnd);
+            var s = usignature.slice(sStart);
+            return new Uint8Array([...r, ...s]);
+        }
+
         async function createCredential() {
             const publicKey = {
                 challenge: new Uint8Array([1]),
@@ -85,7 +95,7 @@
                 const authDataHex = buf2hex(assertion.response.authenticatorData);
                 // const authDataHex = "0x" + decodedAttestationObject.authData.toString("hex");
                 console.log('authDataHex: ', authDataHex);
-                console.log('sig: ', assertion.response.signature);
+                console.log('sig: ', buf2hex(derToBytes(assertion.response.signature)));
             } catch (err) {
                 console.error('Error getting signature:', err);
             }
