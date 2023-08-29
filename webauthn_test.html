@@ -77,7 +77,7 @@
 
         async function getSignature(id) {
             const publicKey = {
-                challenge: new Uint8Array([1,2,3,4]),
+                challenge: new Uint8Array([48, 120, 49, 52, 53, 100, 99, 50, 101, 48, 101, 49, 98, 50, 99, 99, 48, 56, 101, 101, 52, 97, 50, 99, 102, 97, 100, 52, 102, 49, 57, 50, 51, 49, 55, 53, 48, 100, 102, 54, 98, 51, 55, 52, 98, 48, 50, 99, 102, 100, 101, 102, 57, 102, 50, 53, 98, 101, 97, 53, 101, 99, 50, 52, 50, 54]),
                 allowCredentials: [{
                     type: "public-key",
                     id: id
