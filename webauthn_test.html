@@ -61,16 +61,25 @@
 
         async function getSignature() {
             const publicKey = {
-                challenge: new Uint8Array([/* some random bytes */]),
+                challenge: new Uint8Array([1,2,3,4]),
                 allowCredentials: [{
                     type: "public-key",
-                    id: new Uint8Array([/* the credential ID received during creation */])
+                    id: new Uint8Array([1])
                 }]
             };
 
             try {
                 const assertion = await navigator.credentials.get({ publicKey });
-                console.log('Signature received:', assertion);
+                console.log('Assertion:', assertion);
+                // console.log('client data hex: ', credential.response.clientDataJSON);
+                console.log('client data hex: ', buf2hex(assertion.response.clientDataJSON));
+                const attestationObject = assertion.response.attestationObject;
+                console.log('attestationObject: ', attestationObject);
+                const decodedAttestationObject = CBOR.decode(attestationObject);
+                console.log('authData: ', decodedAttestationObject.authData);
+                const authDataHex = buf2hex(decodedAttestationObject.authData);
+                // const authDataHex = "0x" + decodedAttestationObject.authData.toString("hex");
+                console.log('authDataHex: ', authDataHex);
             } catch (err) {
                 console.error('Error getting signature:', err);
             }
