@@ -79,14 +79,13 @@
                 const assertion = await navigator.credentials.get({ publicKey });
                 console.log('Assertion:', assertion);
                 // console.log('client data hex: ', credential.response.clientDataJSON);
+                console.log('credId: ', buf2hex(id));
                 console.log('client data hex: ', buf2hex(assertion.response.clientDataJSON));
-                const attestationObject = assertion.response.attestationObject;
-                console.log('attestationObject: ', attestationObject);
-                const decodedAttestationObject = CBOR.decode(attestationObject);
-                console.log('authData: ', decodedAttestationObject.authData);
+                console.log('authData: ', assertion.response.authenticatorData);
                 const authDataHex = buf2hex(decodedAttestationObject.authData);
                 // const authDataHex = "0x" + decodedAttestationObject.authData.toString("hex");
                 console.log('authDataHex: ', authDataHex);
+                console.log('sig: ', assertion.response.signature);
             } catch (err) {
                 console.error('Error getting signature:', err);
             }
