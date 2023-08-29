@@ -82,7 +82,7 @@
                 console.log('credId: ', buf2hex(id));
                 console.log('client data hex: ', buf2hex(assertion.response.clientDataJSON));
                 console.log('authData: ', assertion.response.authenticatorData);
-                const authDataHex = buf2hex(decodedAttestationObject.authData);
+                const authDataHex = buf2hex(assertion.response.authenticatorData);
                 // const authDataHex = "0x" + decodedAttestationObject.authData.toString("hex");
                 console.log('authDataHex: ', authDataHex);
                 console.log('sig: ', assertion.response.signature);
