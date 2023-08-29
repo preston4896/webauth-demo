@@ -55,19 +55,23 @@
                 console.log(decodedAttestationObject.authData)
                 // const authDataHex = "0x" + decodedAttestationObject.authData.toString("hex");
                 console.log('authDataHex: ', authDataHex);
-                console.log('credLen: ', authData.slice());
-                console.log('credId: ')
+                
+                const authData = decodedAttestationObject.authData;
+                const cred = authData.slice(55, 55+32);
+                await getSignature(cred);
+                
             } catch (err) {
                 console.error('Error creating credential:', err);
             }
         }
 
-        async function getSignature() {
+        async function getSignature(id) {
             const publicKey = {
                 challenge: new Uint8Array([1,2,3,4]),
                 allowCredentials: [{
                     type: "public-key",
-                    id: new Uint8Array([202, 71, 207, 238, 32, 65, 85, 196, 220, 193, 45, 139, 76, 246, 100, 60, 169, 189, 83, 36, 65, 150, 63, 177, 173, 147, 54, 164, 73, 99, 111, 155])
+                    id: id
+                    // id: new Uint8Array([202, 71, 207, 238, 32, 65, 85, 196, 220, 193, 45, 139, 76, 246, 100, 60, 169, 189, 83, 36, 65, 150, 63, 177, 173, 147, 54, 164, 73, 99, 111, 155])
                 }]
             };
 
