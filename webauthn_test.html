@@ -8,7 +8,18 @@
 <body>
     <h1>WebAuthn Test Page</h1>
     <button onclick="createCredential()">Create Credential</button>
-    <button onclick="getSignature()">Get Signature</button>
+
+    <form id="sig-form">
+        <h2> Insert CredentialID and Challenge for assertion </h2>
+        <label for="cred"> CredId: </label><br>
+        <input type="text" id="cred"><br>
+        <label for="challenge"> Challenge: </label><br>
+        <input type="text" id="challenge"><br><br>
+    </form>
+
+    <button onclick="handleForm()"> Get Signature </button>
+
+    <!-- <button onclick="getSignature()">Get Signature</button> -->
 
     <script src="./cbor.js"></script>
     
@@ -16,6 +27,14 @@
         function buf2hex(buffer) { // buffer is an ArrayBuffer  
             return [...new Uint8Array(buffer)] .map(x => x.toString(16).padStart(2, '0'))
                 .join('');
+        }
+
+        function hex2Buf(hex) {
+            let ret = [];
+            for (let i = 2; i < hex.length; i += 2) {
+                ret.push(parseInt(hex.substr(i, 2), 16));
+            }
+            return new Uint8Array(ret);
         }
 
         function derToBytes(signature) {
@@ -68,16 +87,19 @@
                 
                 const authData = decodedAttestationObject.authData;
                 const cred = authData.slice(55, 55+32);
-                await getSignature(cred);
+                alert("Cred ID created, check console.log");
+                console.log("CredId created: ", cred);
+                console.log("CredId hex: ", buf2hex(cred));
                 
             } catch (err) {
                 console.error('Error creating credential:', err);
             }
         }
 
-        async function getSignature(id) {
+        async function getSignature(id, challenge) {
             const publicKey = {
-                challenge: new Uint8Array([48, 120, 97, 48, 98, 57, 56, 53, 50, 98, 102, 55, 57, 101, 97, 57, 54, 99, 52, 55, 49, 50, 98, 97, 48, 54, 100, 51, 53, 53, 54, 98, 101, 97, 54, 51, 99, 102, 48, 102, 55, 102, 102, 55, 49, 102, 56, 56, 98, 55, 55, 100, 53, 53, 55, 99, 57, 98, 51, 52, 57, 48, 51, 97, 50, 53]),
+                challenge: challenge,
+                // challenge: new Uint8Array([48, 120, 97, 48, 98, 57, 56, 53, 50, 98, 102, 55, 57, 101, 97, 57, 54, 99, 52, 55, 49, 50, 98, 97, 48, 54, 100, 51, 53, 53, 54, 98, 101, 97, 54, 51, 99, 102, 48, 102, 55, 102, 102, 55, 49, 102, 56, 56, 98, 55, 55, 100, 53, 53, 55, 99, 57, 98, 51, 52, 57, 48, 51, 97, 50, 53]),
                 allowCredentials: [{
                     type: "public-key",
                     id: id
@@ -101,7 +123,32 @@
             }
         }
 
-        
+        async function handleForm() {
+            console.log("onsubmit invoked");
+            let credIdHex = (document.getElementById("cred")).value;
+            let challengeHex = (document.getElementById("challenge")).value;
+            console.log(credIdHex);
+            console.log(challengeHex);
+
+            let credId = hex2Buf(credIdHex);
+            let challenge = hex2Buf(challengeHex);
+
+            console.log(credId);
+            console.log(challenge);
+
+            await getSignature(credId, challenge);
+
+            return true;
+        }
+
+        // let form = document.getElementById("sig-form");
+        // let formButton = document.getElementById("submit-btn");
+
+        // formButton.addEventListener("click", () => {
+        //     // form.submit();
+        //     console.log("form: ");
+        //     console.log(form);
+        // })
     </script>
 </body>
 </html>
