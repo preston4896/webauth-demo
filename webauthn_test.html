@@ -31,7 +31,12 @@
 
         function hex2Buf(hex) {
             let ret = [];
-            for (let i = 2; i < hex.length; i += 2) {
+            let prefix = hex.substr(0, 2);
+            let begin = 0;
+            if (prefix === '0x') {
+                begin = 2;
+            }
+            for (let i = begin; i < hex.length; i += 2) {
                 ret.push(parseInt(hex.substr(i, 2), 16));
             }
             return new Uint8Array(ret);
