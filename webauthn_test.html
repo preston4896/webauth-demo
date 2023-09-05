@@ -129,6 +129,8 @@
         }
 
         async function handleForm() {
+            let enc = new TextEncoder();
+
             console.log("onsubmit invoked");
             let credIdHex = (document.getElementById("cred")).value;
             let challengeHex = (document.getElementById("challenge")).value;
@@ -136,7 +138,7 @@
             console.log(challengeHex);
 
             let credId = hex2Buf(credIdHex);
-            let challenge = hex2Buf(challengeHex);
+            let challenge = enc.encode(challengeHex);
 
             console.log(credId);
             console.log(challenge);
