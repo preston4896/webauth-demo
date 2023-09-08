@@ -56,7 +56,8 @@
             const publicKey = {
                 challenge: new Uint8Array([1]),
                 rp: {
-                    name: "Your WebAuthn Demo"
+                    name: "Your WebAuthn Demo",
+                    id: "pom.ata.network" // this is wrong
                 },
                 user: {
                     id: new Uint8Array([1]),
@@ -80,7 +81,10 @@
                 const credential = await navigator.credentials.create({ publicKey });
                 console.log('Credential created:', credential);
                 // console.log('client data hex: ', credential.response.clientDataJSON);
-                console.log('client data hex: ', buf2hex(credential.response.clientDataJSON));
+                const clientDataJsonHex = buf2hex(credential.response.clientDataJSON);
+                const clientDataJSONString = credential.response.clientDataJSON.toString('utf8');
+                console.log('client data hex: ', clientDataJsonHex);
+                console.log('client data json string: ', clientDataJSONString);
                 const attestationObject = credential.response.attestationObject;
                 console.log('attestationObject: ', attestationObject);
                 const decodedAttestationObject = CBOR.decode(attestationObject);
