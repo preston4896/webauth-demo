@@ -7,19 +7,18 @@
 </head>
 <body>
     <h1>WebAuthn Test Page</h1>
+    <input type = "text" id = "challenge" placeholder="walletAddress">
     <button onclick="createCredential()">Create Credential</button>
 
-    <form id="sig-form">
+    <!-- <form id="sig-form">
         <h2> Insert CredentialID and Challenge for assertion </h2>
         <label for="cred"> CredId: </label><br>
         <input type="text" id="cred"><br>
         <label for="challenge"> Challenge: </label><br>
         <input type="text" id="challenge"><br><br>
-    </form>
+    </form> -->
 
-    <button onclick="handleForm()"> Get Signature </button>
-
-    <!-- <button onclick="getSignature()">Get Signature</button> -->
+    <!-- <button onclick="handleForm()"> Get Signature </button> -->
 
     <script src="./cbor.js"></script>
     
@@ -53,8 +52,24 @@
         }
 
         async function createCredential() {
+
+            let challengeHex = (document.getElementById("challenge")).value;
+            
+            if (!challengeHex) {
+                alert("you must provide a wallet address");
+            }
+
+            let paddedChallenge = "0x" + "0".repeat(24) + challengeHex.substring(2).toLowerCase();
+            const enc = new TextEncoder();
+
             const publicKey = {
-                challenge: new Uint8Array([48, 120, 100, 99, 51, 98, 100, 97, 54, 100, 52, 48, 102, 48, 101, 51, 51, 101, 48, 100, 102, 97, 52, 97, 101, 102, 57, 54, 48, 52, 98, 54, 54, 49, 57, 53, 101, 54, 99, 53, 100, 99]),
+                // challenge: new Uint8Array([48, 120, 100, 99, 51, 98, 100, 97, 54, 100, 52, 48, 102, 48, 101, 51, 51, 101, 48, 100, 102, 97, 52, 97, 101, 102, 57, 54, 48, 52, 98, 54, 54, 49, 57, 53, 101, 54, 99, 53, 100, 99]),
+                authenticatorSelection: {
+                    userVerification: "preferred",
+                    residentKey: "discouraged",
+                },
+                attestation: "direct",
+                challenge: enc.encode(paddedChallenge),
                 rp: {
                     name: "Your WebAuthn Demo",
                     id: "prestonong.com"
@@ -69,12 +84,7 @@
                         type: "public-key",
                         alg: -7  // "ES256" IANA COSE Algorithms registry
                     }
-                ],
-                attestation: "direct",
-                authenticatorSelection: {
-                    userVerification: "preferred",
-                    residentKey: "discouraged",
-                }
+                ]
             };
 
             try {
@@ -88,69 +98,72 @@
                 const attestationObject = credential.response.attestationObject;
                 console.log('attestationObject: ', attestationObject);
                 const decodedAttestationObject = CBOR.decode(attestationObject);
+                // console.log("decoded object: ", decodedAttestationObject);
                 console.log('authData: ', decodedAttestationObject.authData);
                 const authDataHex = buf2hex(decodedAttestationObject.authData);
                 console.log(decodedAttestationObject.authData)
                 // const authDataHex = "0x" + decodedAttestationObject.authData.toString("hex");
                 console.log('authDataHex: ', authDataHex);
+
+                console.log('attStmt response: ', decodedAttestationObject.attStmt.response);
                 
-                const authData = decodedAttestationObject.authData;
-                const cred = authData.slice(55, 55+32);
-                alert("Cred ID created, check console.log");
-                console.log("CredId created: ", cred);
-                console.log("CredId hex: ", buf2hex(cred));
+                // const authData = decodedAttestationObject.authData;
+                // const cred = authData.slice(55, 55+32);
+                // alert("Cred ID created, check console.log");
+                // console.log("CredId created: ", cred);
+                // console.log("CredId hex: ", buf2hex(cred));
                 
             } catch (err) {
                 console.error('Error creating credential:', err);
             }
         }
 
-        async function getSignature(id, challenge) {
-            const publicKey = {
-                challenge: challenge,
-                // challenge: new Uint8Array([48, 120, 97, 48, 98, 57, 56, 53, 50, 98, 102, 55, 57, 101, 97, 57, 54, 99, 52, 55, 49, 50, 98, 97, 48, 54, 100, 51, 53, 53, 54, 98, 101, 97, 54, 51, 99, 102, 48, 102, 55, 102, 102, 55, 49, 102, 56, 56, 98, 55, 55, 100, 53, 53, 55, 99, 57, 98, 51, 52, 57, 48, 51, 97, 50, 53]),
-                allowCredentials: [{
-                    type: "public-key",
-                    id: id
-                    // id: new Uint8Array([202, 71, 207, 238, 32, 65, 85, 196, 220, 193, 45, 139, 76, 246, 100, 60, 169, 189, 83, 36, 65, 150, 63, 177, 173, 147, 54, 164, 73, 99, 111, 155])
-                }]
-            };
+        // async function getSignature(id, challenge) {
+        //     const publicKey = {
+        //         challenge: challenge,
+        //         // challenge: new Uint8Array([48, 120, 97, 48, 98, 57, 56, 53, 50, 98, 102, 55, 57, 101, 97, 57, 54, 99, 52, 55, 49, 50, 98, 97, 48, 54, 100, 51, 53, 53, 54, 98, 101, 97, 54, 51, 99, 102, 48, 102, 55, 102, 102, 55, 49, 102, 56, 56, 98, 55, 55, 100, 53, 53, 55, 99, 57, 98, 51, 52, 57, 48, 51, 97, 50, 53]),
+        //         allowCredentials: [{
+        //             type: "public-key",
+        //             id: id
+        //             // id: new Uint8Array([202, 71, 207, 238, 32, 65, 85, 196, 220, 193, 45, 139, 76, 246, 100, 60, 169, 189, 83, 36, 65, 150, 63, 177, 173, 147, 54, 164, 73, 99, 111, 155])
+        //         }]
+        //     };
 
-            try {
-                const assertion = await navigator.credentials.get({ publicKey });
-                console.log('Assertion:', assertion);
-                // console.log('client data hex: ', credential.response.clientDataJSON);
-                console.log('credId: ', buf2hex(id));
-                console.log('client data hex: ', buf2hex(assertion.response.clientDataJSON));
-                console.log('authData: ', assertion.response.authenticatorData);
-                const authDataHex = buf2hex(assertion.response.authenticatorData);
-                // const authDataHex = "0x" + decodedAttestationObject.authData.toString("hex");
-                console.log('authDataHex: ', authDataHex);
-                console.log('sig: ', buf2hex(derToBytes(assertion.response.signature)));
-            } catch (err) {
-                console.error('Error getting signature:', err);
-            }
-        }
+        //     try {
+        //         const assertion = await navigator.credentials.get({ publicKey });
+        //         console.log('Assertion:', assertion);
+        //         // console.log('client data hex: ', credential.response.clientDataJSON);
+        //         console.log('credId: ', buf2hex(id));
+        //         console.log('client data hex: ', buf2hex(assertion.response.clientDataJSON));
+        //         console.log('authData: ', assertion.response.authenticatorData);
+        //         const authDataHex = buf2hex(assertion.response.authenticatorData);
+        //         // const authDataHex = "0x" + decodedAttestationObject.authData.toString("hex");
+        //         console.log('authDataHex: ', authDataHex);
+        //         console.log('sig: ', buf2hex(derToBytes(assertion.response.signature)));
+        //     } catch (err) {
+        //         console.error('Error getting signature:', err);
+        //     }
+        // }
 
-        async function handleForm() {
-            let enc = new TextEncoder();
+        // async function handleForm() {
+        //     let enc = new TextEncoder();
 
-            console.log("onsubmit invoked");
-            let credIdHex = (document.getElementById("cred")).value;
-            let challengeHex = (document.getElementById("challenge")).value;
-            console.log(credIdHex);
-            console.log(challengeHex);
+        //     console.log("onsubmit invoked");
+        //     let credIdHex = (document.getElementById("cred")).value;
+        //     let challengeHex = (document.getElementById("challenge")).value;
+        //     console.log(credIdHex);
+        //     console.log(challengeHex);
 
-            let credId = hex2Buf(credIdHex);
-            let challenge = enc.encode(challengeHex);
+        //     let credId = hex2Buf(credIdHex);
+        //     let challenge = enc.encode(challengeHex);
 
-            console.log(credId);
-            console.log(challenge);
+        //     console.log(credId);
+        //     console.log(challenge);
 
-            await getSignature(credId, challenge);
+        //     await getSignature(credId, challenge);
 
-            return true;
-        }
+        //     return true;
+        // }
 
         // let form = document.getElementById("sig-form");
         // let formButton = document.getElementById("submit-btn");
