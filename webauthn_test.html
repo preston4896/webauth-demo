@@ -89,21 +89,23 @@
 
             try {
                 const credential = await navigator.credentials.create({ publicKey });
-                console.log('Credential created:', credential);
+                // console.log('Credential created:', credential);
                 // console.log('client data hex: ', credential.response.clientDataJSON);
                 const clientDataJsonHex = buf2hex(credential.response.clientDataJSON);
                 const clientDataJSONString = credential.response.clientDataJSON.toString('utf8');
                 console.log('client data hex: ', clientDataJsonHex);
-                console.log('client data json string: ', clientDataJSONString);
+                // console.log('client data json string: ', clientDataJSONString);
                 const attestationObject = credential.response.attestationObject;
-                console.log('attestationObject: ', attestationObject);
+                // console.log('attestationObject: ', attestationObject);
                 const decodedAttestationObject = CBOR.decode(attestationObject);
                 console.log("decoded object: ", decodedAttestationObject);
-                console.log('authData: ', decodedAttestationObject.authData);
+                // console.log('authData: ', decodedAttestationObject.authData);
                 const authDataHex = buf2hex(decodedAttestationObject.authData);
-                console.log(decodedAttestationObject.authData)
+                // console.log(decodedAttestationObject.authData)
                 // const authDataHex = "0x" + decodedAttestationObject.authData.toString("hex");
                 console.log('authDataHex: ', authDataHex);
+
+                console.log('attStmt response: ', decodedAttestationObject.attStmt);
 
                 const jsonDownload = {
                     clientData: clientDataJsonHex,
@@ -116,12 +118,11 @@
                 // Create a download link
                 const downloadLink = document.createElement('a');
                 downloadLink.href = URL.createObjectURL(jsonBlob);
+                console.log('json url: ', downloadLink.href);
                 downloadLink.download = 'data.json';
 
                 // Trigger the download
                 downloadLink.click();
-
-                // console.log('attStmt response: ', decodedAttestationObject.attStmt.response);
                 
                 // const authData = decodedAttestationObject.authData;
                 // const cred = authData.slice(55, 55+32);
