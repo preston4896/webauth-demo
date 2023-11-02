@@ -54,7 +54,7 @@
         function checkPrefix(challenge) {
             let prefixed = '';
             if (challenge.substring(0, 2) !== '0x') {
-                prefixed = '0x' + challenge.substring(2);
+                prefixed = '0x' + challenge;
             } else {
                 prefixed = challenge;
             }
